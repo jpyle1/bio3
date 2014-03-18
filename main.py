@@ -47,6 +47,10 @@ def run(l,N,G,pm,pc):
 		fitSum = sum(fitnesses)
 		#Get the averageFit
 		avgFit[gen] = fitSum/N
+		#Get number of corr bits
+		numCorr[gen] = len(filter(lambda x: x=="1",
+			bin(population[fitnesses.index(bestFit[gen])])[2:].zfill(l)))
+	
 		#Keep an array of the normalized fitness values.
 		fitNorm = map(lambda x: x/fitSum,fitnesses)	
 		#Get the running total...
@@ -94,9 +98,7 @@ def run(l,N,G,pm,pc):
 			nextGen.append(int(childTwo,2))
 
 		population = nextGen
-	print avgFit
-	print "=="
-	print bestFit
+	return (numCorr,avgFit,bestFit)
 								
 if __name__ == "__main__":
 	#Set the default values.
@@ -133,4 +135,12 @@ if __name__ == "__main__":
 	print "CrossOver Prob "+str(pc)
 	#Seed random.
 	random.seed()
-	run(l,N,G,pm,pc)
+	stats = []
+	for x in xrange(6):
+		stats.append(run(l,N,G,pm,pc))
+	corrStr = "\n".join(map(lambda x,y: str(y)+":"+str(x[0]),stats,xrange(6)))
+	bestStr = "\n".join(map(lambda x,y: str(y)+":"+str(x[2]),stats,xrange(6)))
+	avgStr = "\n".join(map(lambda x,y: str(y)+":"+str(x[1]),stats,xrange(6)))
+	print corrStr	
+	print bestStr
+	print avgStr
